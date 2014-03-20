@@ -1,0 +1,17 @@
+{
+  "uuid": "827bb971-ed54-44f1-9e06-1f9d75ce25ce",
+  "shortName": "Teapot",
+  "longName": "Teapot",
+  "companyName": "Jnm",
+  "versionCode": 1,
+  "versionLabel": "1.1.0",
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
