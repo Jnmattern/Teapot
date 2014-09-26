@@ -15,14 +15,14 @@ typedef struct {
 #define TIMER_DELAY 30
 #define EYEZ 600
 
-#define SIM
+//#define SIM
 
 static Window *window;
 static Layer *rootLayer, *layer;
 //static TextLayer *textLayer;
 //static char text[20];
 static AppTimer *timer;
-static int32_t a=0, b=0, c=0, da=119, db=-211, dc=87;
+static int32_t a=0, b=0, c=0, da=387, db=-211, dc=511;
 static int32_t cosa, sina, cosb, sinb, cosc, sinc;
 
 #ifndef SIM
@@ -91,40 +91,43 @@ Facet facet[NFACETS];
 
 
 #ifndef SIM
-static inline float mySqrtf(const float x) {
-	const float xhalf = 0.5f*x;
-	union { float x; int i; 	} u;
-	u.x = x;
-	u.i = 0x5f3759df - (u.i >> 1);
-	return x*u.x*(1.5f - xhalf*u.x*u.x);
+
+static inline uint16_t squareRoot(uint16_t x) {
+  uint16_t a, b;
+
+  b = x;
+  a = x = 0x3f;
+  x = b/x;
+  a = x = (x+a)>>1;
+  x = b/x;
+  a = x = (x+a)>>1;
+  x = b/x;
+  x = (x+a)>>1;
+
+  return x;
 }
 
+static inline int32_t myArccos(int16_t x) {
+  if (x < -500.0) x = -500.0;
+  if (x > 500.0) x = 500.0;
 
-static inline float length(const GPoint3 *v) {
-	return mySqrtf((float)(v->x*v->x + v->y*v->y + v->z*v->z));
+  return __ACOS[500+x];
 }
 
-static inline int32_t myArccos(float x) {
-	if (x < -1.0) x = -1.0;
-	if (x > 1.0) x = 1.0;
-	
-	int i = (int)(500.0*(x+1.0));
-	//	APP_LOG(APP_LOG_LEVEL_DEBUG, "myArccos(%4d->%3d)", (int)(x*1000), i);
-	
-	return __ACOS[i];
+static inline int32_t length(const GPoint3 *v) {
+  return squareRoot(v->x*v->x + v->y*v->y + v->z*v->z);
 }
+
 
 static void angles(const GPoint3 *v, int32_t *ax, int32_t *ay, int32_t *az) {
-	static int32_t TRIG_PI = TRIG_MAX_ANGLE/2;
-	static int32_t TRIG_HALFPI = TRIG_MAX_ANGLE/4;
-	
-	float s = length(v);
-	*ax = myArccos((float)v->y/s) + TRIG_PI;
-	*ay = myArccos((float)v->x/s) - TRIG_HALFPI;
-	*az = 0;
+  float s = length(v);
+  *ax = myArccos(500*v->y/s) - TRIG_MAX_ANGLE/4;
+  *ay = myArccos(500*v->x/s) - TRIG_MAX_ANGLE/4;
+  *az = 0;
 
-	//	APP_LOG(APP_LOG_LEVEL_DEBUG, "length(%d, %d, %d) = %d / angles : %d %d %d", v->x, v->y, v->z, (int)s, (int)*ax, (int)*ay, (int)*az);
+  //	APP_LOG(APP_LOG_LEVEL_DEBUG, "length(%d, %d, %d) = %d / angles : %d %d %d", v->x, v->y, v->z, (int)s, (int)*ax, (int)*ay, (int)*az);
 }
+
 #endif
 
 static inline void rotatePoint(const GPoint3 *P, GPoint3 *R) {
