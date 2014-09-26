@@ -120,7 +120,7 @@ static inline int32_t length(const GPoint3 *v) {
 
 
 static void angles(const GPoint3 *v, int32_t *ax, int32_t *ay, int32_t *az) {
-  float s = length(v);
+  int32_t s = length(v);
   *ax = myArccos(500*v->y/s) - TRIG_MAX_ANGLE/4;
   *ay = myArccos(500*v->x/s) - TRIG_MAX_ANGLE/4;
   *az = 0;
